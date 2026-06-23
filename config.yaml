@@ -1,0 +1,28 @@
+app:
+  env: development
+  port: "8080"
+  name: oa-leave-system
+
+database:
+  host: localhost
+  port: 5432
+  user: oa
+  password: oa_pass
+  name: oa_leave
+  maxConns: 20
+  minConns: 2
+  migrationsPath: ./migrations
+
+redis:
+  addr: "localhost:6379"
+  password: ""
+  db: 0
+
+jwt:
+  secret: "dev-secret-do-not-use-in-production"
+  expiration: "24h"
+
+workflow:
+  autoApproveMaxDays: 1
+  minimumOnSiteRatio: 0.5
+  minimumOnSiteCount: 2

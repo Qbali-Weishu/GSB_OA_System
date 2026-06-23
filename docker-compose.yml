@@ -1,0 +1,44 @@
+version: "3.9"
+services:
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: oa
+      POSTGRES_PASSWORD: oa_pass
+      POSTGRES_DB: oa_leave
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U oa -d oa_leave"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      OA_APP_ENV: production
+      OA_APP_PORT: "8080"
+      OA_DATABASE_HOST: postgres
+      OA_DATABASE_PORT: "5432"
+      OA_DATABASE_USER: oa
+      OA_DATABASE_PASSWORD: oa_pass
+      OA_DATABASE_NAME: oa_leave
+      OA_DATABASE_MIGRATIONSPATH: /app/migrations
+      OA_REDIS_ADDR: "redis:6379"
+      OA_JWT_SECRET: test-secret-key
+      OA_WORKFLOW_AUTOAPPROVEMAX_DAYS: "1"
+      OA_WORKFLOW_MINIMUMONSITE_COUNT: "2"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
